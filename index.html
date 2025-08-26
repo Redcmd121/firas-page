@@ -1,33 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Firas</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Firas // Terminal</title>
   <style>
-    body {
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
-      padding: 20px;
-      font-size: 18px;
+    :root{
+      /* tweak these if you want */
+      --green: #19ff4d;             /* hacker green */
+      --cyan:  #63e6ff;             /* link color */
+      --type-speed: 28ms;           /* char speed */
+      --line-delay: 600ms;          /* delay between lines */
+      --glow: 0 0 6px #19ff4d, 0 0 14px #19ff4d;
     }
-    a {
-      color: #00ffff;
-      text-decoration: none;
+
+    html,body{
+      height:100%;
+      margin:0;
+      background:#0a0a08;           /* very dark, slightly warm (beige CRT vibe) */
+      color:var(--green);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Liberation Mono",
+                   "Courier New", monospace;
+      line-height:1.6;
     }
-    .cursor {
-      display: inline-block;
-      animation: blink 1s step-start infinite;
+
+    .wrap{
+      position:relative;
+      max-width:960px;
+      margin:6vh auto;
+      padding:32px 24px 48px;
+      filter: contrast(1.02) saturate(1.05);
+    }
+
+    /* Terminal bezel-ish */
+    .screen{
+      position:relative;
+      padding:28px 24px 36px;
+      background:#0a0a08;
+      border:2px solid #222018;
+      border-radius:10px;
+      box-shadow:
+        inset 0 0 120px rgba(25,255,77,0.04),
+        0 30px 90px rgba(0,0,0,.45);
+    }
+
+    /* CRT scanlines + vignette + flicker */
+    .screen::after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at center,
+          rgba(0,0,0,0) 0%,
+          rgba(0,0,0,0) 60%,
+          rgba(0,0,0,.25) 100%),
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.03) 0px,
+          rgba(255,255,255,0.03) 1px,
+          rgba(0,0,0,0.10) 2px,
+          rgba(0,0,0,0.10) 3px
+        );
+      pointer-events:none;
+      mix-blend-mode: screen;
+      animation:flicker 2.2s infinite steps(60);
+    }
+
+    @keyframes flicker{
+      0%, 100% { opacity: .95; }
+      50%      { opacity: .90; }
+      60%      { opacity: .92; }
+      70%      { opacity: .88; }
+    }
+
+    .line{
+      white-space:pre-wrap;
+      text-shadow: var(--glow);
+      font-size: clamp(16px, 2.2vw, 22px);
+      margin: 14px 0;
+      letter-spacing: .3px;
+    }
+
+    .prompt{ color: var(--green); }
+    .cursor{
+      display:inline-block;
+      width: .6ch;
+      background: var(--green);
+      margin-left: 2px;
+      vertical-align: -2px;
+      animation: blink 1s steps(1, end) infinite;
+      box-shadow: var(--glow);
     }
     @keyframes blink { 50% { opacity: 0; } }
+
+    a{
+      color: var(--cyan);
+      text-decoration: none;
+      text-shadow: 0 0 6px var(--cyan), 0 0 14px var(--cyan);
+      border-bottom: 1px dotted rgba(99,230,255,.5);
+    }
+
+    /* Respect reduced motion settings */
+    @media (prefers-reduced-motion: reduce){
+      .screen::after{ animation:none; }
+      .cursor{ animation:none; }
+    }
   </style>
 </head>
 <body>
-  <p>> Hello, my name is Firas</p>
-  <br>
-  <p>> I love tech.</p>
-  <br>
-  <p>> Follow me on Twitter: <a href="https://x.com/FirasAlkasah">@FirasAlkasah</a></p>
-  <p class="cursor">█</p>
+  <div class="wrap">
+    <div class="screen" id="screen">
+      <!-- lines will be typed into here -->
+    </div>
+  </div>
+
+  <script>
+    // Define your lines here
+    const LINES = [
+      { text: "Hello, my name is Firas." },
+      { text: "I love tech, design, and building things that push creativity forward." },
+      { text: "Follow me on Twitter: ", link: { label: "@FirasAlkasah", href: "https://x.com/FirasAlkasah" } }
+    ];
+
+    const screen = document.getElementById('screen');
+
+    // Create a line element with a prompt and cursor
+    function createLine(){
+      const line = document.createElement('div');
+      line.className = 'line';
+      const prompt = document.createElement('span');
+      prompt.className = 'prompt';
+      prompt.textContent = "> ";
+      const content = document.createElement('span');
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      line.appendChild(prompt);
+      line.appendChild(content);
+      line.appendChild(cursor);
+      screen.appendChild(line);
+      return { line, content, cursor };
+    }
+
+    // Typewriter that handles plain text + optional link at end
+    async function typeAll(){
+      for (let i = 0; i < LINES.length; i++){
+        const { text, link } = LINES[i];
+        const { content, cursor } = createLine();
+        await typeText(content, text);
+        if (link){
+          // space before link if needed
+          if (text && !text.endsWith(' ')) content.appendChild(document.createTextNode(' '));
+          const a = document.createElement('a');
+          a.href = link.href; a.target = "_blank"; a.rel = "noopener";
+          a.textContent = link.label;
+          content.appendChild(a);
+        }
+        // hold the cursor at end of this line briefly
+        await wait(parseInt(getComputedStyle(document.documentElement)
+                .getPropertyValue('--line-delay')));
+        // then remove the cursor (it will appear on next line)
+        cursor.remove();
+      }
+      // after final line, leave a steady cursor
+      const last = createLine();
+    }
+
+    function wait(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+    async function typeText(node, str){
+      const speed = parseInt(getComputedStyle(document.documentElement)
+                    .getPropertyValue('--type-speed'));
+      for (let i=0; i<str.length; i++){
+        node.append(str[i]);
+        await wait(speed);
+      }
+    }
+
+    // fire it up
+    typeAll();
+  </script>
 </body>
 </html>
+
