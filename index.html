@@ -6,88 +6,107 @@
 <title>FirasOS // CRT</title>
 <style>
   :root{
-    --green:#1aff52;
+    --green:#1aff52;               /* hacker green */
     --cyan:#63e6ff;
-    --beige:#d9cda9;
-    --beige-dark:#b8a67a;
-    --type-speed:26ms;
-    --line-delay:600ms;
-    --glow:0 0 6px #1aff52,0 0 14px #1aff52;
-    --hand-time:1.6s;       /* hand carry-in duration */
-    --boot-time:3200ms;     /* boot duration before terminal */
+    --beige:#d9cda9;               /* CRT plastic */
+    --type-speed:24ms;             /* typing speed */
+    --line-delay:600ms;            /* pause between lines */
+    --glow:0 0 6px #1aff52, 0 0 14px #1aff52;
+    --pop-time:900ms;              /* monitor pop-in duration */
+    --boot-time:3400ms;            /* boot length before terminal */
   }
 
-  html,body{height:100%;margin:0;background:#111;font-family:ui-monospace,Menlo,Monaco,Consolas,"Courier New",monospace;}
+  html,body{height:100%;margin:0;background:#101012;font-family:ui-monospace,Menlo,Monaco,Consolas,"Courier New",monospace;color:#ddd;}
 
+  /* Scene */
   .stage{
-    height:100%; display:grid; place-items:center; overflow:hidden;
+    min-height:100svh; position:relative; overflow:hidden;
+    display:grid; place-items:center;
+    background: radial-gradient(1200px 600px at 50% 10%, rgba(255,255,255,.06), transparent 55%),
+                linear-gradient(#0f0f12, #0b0b0d 60%);
   }
 
-  /* ---------- HAND + MONITOR ENTRANCE ---------- */
+  /* Soft spotlight “lamp” */
+  .spot{
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(600px 300px at 50% 20%, rgba(255,255,220,.16), transparent 70%),
+      radial-gradient(900px 500px at 50% 60%, rgba(255,255,220,.08), transparent 75%);
+    mix-blend-mode:screen;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:.9}
+    50%{opacity:.75}
+  }
+
+  /* Wooden table */
+  .table{
+    position:absolute; left:0; right:0; bottom:0;
+    height:min(22vh,160px);
+    background:
+      linear-gradient(#6a4a31,#563c28),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, rgba(0,0,0,.12) 2px 40px);
+    box-shadow:
+      inset 0 22px 40px rgba(0,0,0,.35),
+      0 -8px 40px rgba(0,0,0,.55);
+    z-index:0;
+  }
+
+  /* Monitor rig pops in from nowhere */
   .rig{
-    position:relative; transform: translateX(-120%) rotate(-6deg) scale(.92);
-    animation: carryIn var(--hand-time) ease-out forwards;
-    transform-origin: bottom left;
+    width: clamp(620px, 86vw, 980px);
+    transform: translateY(60px) scale(.92);
+    opacity:0;
+    animation: popIn var(--pop-time) cubic-bezier(.22,1.2,.32,1) forwards;
+    z-index:2;
   }
-  @keyframes carryIn{
-    0%   {transform: translateX(-120%) rotate(-12deg) scale(.92);}
-    70%  {transform: translateX(6%) rotate(2deg)   scale(1.02);}
-    100% {transform: translateX(0)   rotate(0deg)   scale(1);}
-  }
-
-  /* SVG hand (simple shape) */
-  .hand{
-    position:absolute; left:-120px; bottom:-36px; width:180px; height:auto;
-    filter: drop-shadow(0 12px 24px rgba(0,0,0,.45));
-    animation: handBob 2.2s ease-in-out infinite .4s;
-  }
-  @keyframes handBob{
-    0%,100%{ transform: translateY(0); }
-    50%    { transform: translateY(4px); }
+  @keyframes popIn{
+    0%   { transform: translateY(60px) scale(.82); opacity:0; filter: blur(6px); }
+    60%  { transform: translateY(-6px) scale(1.02); opacity:1; filter: blur(0); }
+    100% { transform: translateY(0)    scale(1);    opacity:1; }
   }
 
-  /* ---------- CRT CHASSIS ---------- */
+  /* CRT chassis */
   .crt{
-    width:min(920px, 88vw);
-    background: linear-gradient(#eee3c8, var(--beige));
+    position:relative;
+    background: linear-gradient(#efe4c8, var(--beige));
     border:1px solid #b7a67f;
-    border-radius:20px;
+    border-radius:22px;
     padding:22px;
     box-shadow:
       inset 0 -6px 0 rgba(0,0,0,.10),
       inset 0 6px 0 rgba(255,255,255,.35),
-      0 26px 70px rgba(0,0,0,.55);
-    position:relative;
+      0 38px 90px rgba(0,0,0,.55);
   }
-
   /* dusty plastic specks */
   .crt::after{
-    content:""; position:absolute; inset:0; border-radius:20px; pointer-events:none;
+    content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none; opacity:.28;
     background-image:
       radial-gradient(rgba(90,80,60,.10) 0 1px, transparent 2px),
       radial-gradient(rgba(60,50,40,.07) 0 1px, transparent 2px);
-    background-size:6px 6px, 10px 10px;
-    mix-blend-mode:multiply; opacity:.28;
+    background-size:6px 6px, 10px 10px; mix-blend-mode:multiply;
   }
 
-  .vent{height:10px; border-radius:8px; opacity:.28; margin-bottom:14px;
+  .vent{height:12px; border-radius:8px; opacity:.28; margin-bottom:14px;
         background:repeating-linear-gradient(90deg,transparent 0 32px,rgba(0,0,0,.22) 32px 36px);}
-
   .label{
     display:inline-block; margin-left:10px; padding:6px 10px; border-radius:6px;
     background:#efe7cf; border:1px solid #b7a67f; color:#4a4331; font-weight:700; letter-spacing:.12em;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
   }
 
-  /* curved glass screen */
+  /* Curved glass screen */
   .screen{
     position:relative; overflow:hidden;
-    background:#0a0a08; border:4px solid #1b1b1a; border-radius:18px/14px;
+    background:#0a0a08; color:var(--green);
+    border:4px solid #1b1b1a; border-radius:18px/14px;
     padding:28px 24px 40px;
+    width:100%;
+    aspect-ratio: 16 / 10;
+    min-height: 360px;
     box-shadow: inset 0 0 140px rgba(26,255,82,.05), inset 0 0 28px rgba(26,255,82,.08);
-    aspect-ratio: 16 / 9;
   }
-
   /* reflection + scanlines + vignette */
   .screen::before, .screen::after{ content:""; position:absolute; inset:0; pointer-events:none; }
   .screen::before{
@@ -108,11 +127,17 @@
   }
   @keyframes flicker{0%,100%{opacity:.96}50%{opacity:.90}70%{opacity:.92}}
 
-  /* ---------- BOOT SCREEN ---------- */
+  /* Power LED */
+  .led{
+    position:absolute; right:26px; bottom:26px; width:10px; height:10px; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, #8aff9c, #0f7d2a 60%);
+    box-shadow: 0 0 10px rgba(26,255,82,.8), 0 0 18px rgba(26,255,82,.6);
+  }
+
+  /* Boot screen */
   .boot{
     color:var(--green); text-shadow:var(--glow);
-    height:100%; display:flex; flex-direction:column; justify-content:center;
-    align-items:center; gap:18px; text-align:center;
+    height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:18px; text-align:center;
   }
   .boot h1{ margin:0; font-size:clamp(22px,4.2vw,34px);}
   .boot .sub{ opacity:.85; }
@@ -122,7 +147,7 @@
          background:linear-gradient(90deg, rgba(26,255,82,.6), rgba(26,255,82,.95));
          box-shadow:var(--glow); transition:width .12s linear; }
 
-  /* ---------- TERMINAL ---------- */
+  /* Terminal */
   .hidden{ display:none; }
   .term .line{ color:var(--green); text-shadow:var(--glow); white-space:pre-wrap;
                margin:12px 0; font-size:clamp(16px,2.1vw,22px); }
@@ -134,35 +159,113 @@
      text-shadow:0 0 6px var(--cyan), 0 0 14px var(--cyan);
      border-bottom:1px dotted rgba(99,230,255,.5); }
 
-  /* reduced motion */
+  /* Reduce motion */
   @media (prefers-reduced-motion:reduce){
     .screen::after{ animation:none; }
     .cursor{ animation:none; }
-    .rig{ animation:none; transform:none; }
+    .rig{ animation:none; transform:none; opacity:1; }
   }
 </style>
 </head>
 <body>
   <div class="stage">
+    <div class="spot"></div>
+    <div class="table"></div>
+
+    <!-- monitor spawns onto table with lighting -->
     <div class="rig">
-      <!-- lil vector hand carrying from the left -->
-      <svg class="hand" viewBox="0 0 220 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="skin" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stop-color="#f2c9a8"/>
-            <stop offset="1" stop-color="#e0a983"/>
-          </linearGradient>
-        </defs>
-        <path d="M10 90 C30 60, 70 40, 110 48
-                 C140 52, 160 68, 168 88
-                 L208 88 L208 120 L160 120
-                 C130 120, 84 118, 40 110
-                 C24 106, 10 100, 10 90Z"
-              fill="url(#skin)" stroke="#c58d6a" stroke-width="2" />
-        <ellipse cx="186" cy="96" rx="14" ry="10" fill="#945b3d" opacity=".35"/>
-      </svg>
+      <div class="crt" role="img" aria-label="Old beige CRT monitor on wooden table under spotlight">
+        <div class="vent"></div><span class="label">FirasOS CRT-2001</span>
+        <div class="screen">
+          <!-- BOOT -->
+          <div id="boot" class="boot">
+            <h1>FirasOS</h1>
+            <div class="sub">Booting… initializing kernel</div>
+            <div class="bar"><div id="fill" class="fill"></div></div>
+            <div class="sub" id="bootMsg">Loading modules…</div>
+          </div>
 
-      <!-- the beige CRT -->
-      <div class="crt" role="img" aria-label="Old CRT monitor">
-        <div
+          <!-- TERMINAL -->
+          <div id="term" class="term hidden"></div>
+          <div class="led" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+<script>
+  /* Boot logic */
+  const fill  = document.getElementById('fill');
+  const boot  = document.getElementById('boot');
+  const term  = document.getElementById('term');
+  const bootMsg = document.getElementById('bootMsg');
+
+  const msgs = [
+    "Detecting devices…","Mounting /home…","Starting services…",
+    "Configuring network…","Warming up GPUs…","Applying hacker green…"
+  ];
+  let mi = 0; const mTimer = setInterval(()=>{ bootMsg.textContent = msgs[mi++ % msgs.length]; }, 700);
+
+  let p = 0;
+  const timer = setInterval(()=>{
+    p = Math.min(100, p + Math.random()*8 + 3);
+    fill.style.width = p + "%";
+    if (p >= 100){
+      clearInterval(timer); clearInterval(mTimer);
+      setTimeout(switchToTerminal, 650);
+    }
+  }, 120);
+
+  function switchToTerminal(){
+    boot.classList.add('hidden');
+    term.classList.remove('hidden');
+    typeAll();
+  }
+
+  /* Terminal typing */
+  const LINES = [
+    { text: "Hello, my name is Firas." },
+    { text: "I love tech, design, and building things that push creativity forward." },
+    { text: "Follow me on Twitter:", link: { label: "@FirasAlkasah", href: "https://x.com/FirasAlkasah" } }
+  ];
+
+  function createLine(){
+    const line = document.createElement('div');
+    line.className = 'line';
+    const prompt = document.createElement('span');
+    prompt.className = 'prompt';
+    prompt.textContent = "> ";
+    const content = document.createElement('span');
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    line.appendChild(prompt); line.appendChild(content); line.appendChild(cursor);
+    term.appendChild(line);
+    return { content, cursor };
+  }
+
+  function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  async function typeText(node, str, speed){
+    for (let i=0;i<str.length;i++){ node.append(str[i]); await wait(speed); }
+  }
+
+  async function typeAll(){
+    const root = getComputedStyle(document.documentElement);
+    const speed = parseInt(root.getPropertyValue('--type-speed')) || 26;
+    const pause = parseInt(root.getPropertyValue('--line-delay')) || 600;
+    for (const item of LINES){
+      const { content, cursor } = createLine();
+      await typeText(content, item.text, speed);
+      if (item.link){
+        content.append(" ");
+        const a = document.createElement('a');
+        a.href = item.link.href; a.target="_blank"; a.rel="noopener";
+        a.textContent = item.link.label;
+        content.appendChild(a);
+      }
+      await wait(pause); cursor.remove();
+    }
+    createLine(); // final blinking cursor
+  }
+</script>
+</body>
+</html>
