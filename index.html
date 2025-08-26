@@ -1,76 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Firas Alkasah — Tech & Science</title>
-    <meta name="description" content="Tech & science insights, professional contact, and socials." />
-    <meta property="og:title" content="Firas Alkasah — Tech & Science" />
-    <meta property="og:description" content="Professional portfolio and contact information." />
-    <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#0b0b10" />
-    <style>
-      :root {
-        --bg: #0b0b10;
-        --bg-2: #0f1324;
-        --text: #f5f7ff;
-        --muted: #b9bed6;
-        --accent: #7c98ff;
-        --accent-2: #a97cff;
-        --ring: rgba(124,152,255,0.4);
-        --shadow: 0 10px 30px rgba(124,152,255,0.15);
-        --radius: 18px;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0; font-family: system-ui, sans-serif; color: var(--text);
-        background: linear-gradient(180deg, #0b0b10, #0f1324);
-        line-height: 1.55;
-      }
-      .container { width: min(1024px, 92vw); margin: auto; padding: 28px 0 80px; }
-      header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 24px; }
-      .brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; }
-      .avatar { width: 44px; height: 44px; border-radius: 50%; background: conic-gradient(from 220deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
-      h1 { font-size: 18px; margin: 0; }
-      .muted { color: var(--muted); font-size: 13px; }
-      .hero { padding: 28px 0 10px; }
-      .title { font-size: clamp(28px, 6vw, 46px); line-height: 1.1; margin:0; }
-      .subtitle { color: var(--muted); font-size: clamp(14px, 3.6vw, 18px); margin-top: 4px; }
-      .cta-row { display:flex; flex-wrap:wrap; gap: 10px; margin-top: 12px; }
-      .btn { display:inline-flex; align-items:center; gap:10px; text-decoration:none; color: var(--text); background: var(--bg-2); padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); box-shadow: var(--shadow); }
-      .btn:hover { transform: translateY(-2px); }
-      .socials { display:flex; gap: 10px; margin-top: 12px; }
-      .icon-btn { width:42px; height:42px; display:grid; place-items:center; border-radius:12px; background: var(--bg-2); border: 1px solid rgba(255,255,255,0.1); color: var(--text); font-weight: bold; text-decoration: none; }
-      footer { margin-top: 42px; color: var(--muted); font-size: 13px; text-align: center; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <a class="brand" href="#">
-          <div class="avatar"></div>
-          <div>
-            <h1>Firas Alkasah</h1>
-            <div class="muted">Tech & Science Enthusiast</div>
-          </div>
-        </a>
-      </header>
-
-      <section class="hero">
-        <h2 class="title">Exploring technology, science, and creative ideas.</h2>
-        <p class="subtitle">Sharing insights and connecting with like-minded innovators.</p>
-        <div class="cta-row">
-          <a class="btn" href="mailto:contact@red64bit.blog">Email Me</a>
-        </div>
-        <div class="socials">
-          <a class="icon-btn" href="https://x.com/FirasAlkasah" aria-label="Twitter">X</a>
-        </div>
-      </section>
-
-      <footer>
-        © <span id="year"></span> Firas Alkasah — All rights reserved.
-      </footer>
-    </div>
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Firas</title>
+  <style>
+    body {
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      padding: 20px;
+      font-size: 18px;
+    }
+    a {
+      color: #00ffff;
+      text-decoration: none;
+    }
+    .cursor {
+      display: inline-block;
+      animation: blink 1s step-start infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+<body>
+  <p>> Hello, my name is Firas</p>
+  <br>
+  <p>> I love tech.</p>
+  <br>
+  <p>> Follow me on Twitter: <a href="https://x.com/FirasAlkasah">@FirasAlkasah</a></p>
+  <p class="cursor">█</p>
+</body>
 </html>
